@@ -1,22 +1,31 @@
 const express = require("express");
+const session = require('express-session');
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// Inicializa o aplicativo Express
+// Initialize the Express app
 const app = express();
+
+app.use(express.json()); // Middleware for parsing JSON requests
+
+app.use(session({
+    secret: 'your_secret_key', // Change this to a strong secret
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set secure: true if using HTTPS
+}));
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configurações do JWT
-const SECRET_KEY = "sua_chave_secreta"; // Mantenha isso em um local seguro
-const TOKEN_EXPIRATION = "1h"; // Define a expiração do token
+// JWT Configurations
+const SECRET_KEY = "your_secret_key"; // Keep this secure
 
-// Importar rotas
+// Import routes
 const userRoutes = require("./routes/user.routes.js");
 const companyRoutes = require("./routes/company.routes.js");
 const companyServiceRoutes = require("./routes/company_services.routes.js");
@@ -25,8 +34,10 @@ const roleRoutes = require("./routes/roles.routes.js");
 const rolePermissionRoutes = require("./routes/role_permissions.routes.js");
 const serviceRoutes = require("./routes/service.routes.js");
 const userCompanyRoutes = require("./routes/user_company.routes.js");
+const authRoutes = require("./routes/auth.routes.js"); // Include auth routes
 
-// Usar as rotas
+// Use routes
+app.use("/api/auth", authRoutes); // Authentication routes
 app.use("/api/users", userRoutes);
 app.use("/api/companies", companyRoutes);
 app.use("/api/company_services", companyServiceRoutes);
@@ -36,13 +47,13 @@ app.use("/api/role_permissions", rolePermissionRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/user_company", userCompanyRoutes);
 
-// Rota básica
+// Basic route
 app.get("/", (req, res) => {
-    res.json({ message: "Bem-vindo à API!" });
+    res.json({ message: "Welcome to the API!" });
 });
 
-// Iniciar o servidor
+// Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Servidor está rodando na porta ${PORT}.`);
+    console.log(`Server is running on port ${PORT}.`);
 });
