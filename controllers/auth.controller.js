@@ -12,11 +12,11 @@ exports.login = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { emailOrUsername, password } = req.body;
 
-    // Check if user exists in the database
-    const query = 'SELECT * FROM users WHERE email = ?';
-    db.query(query, [email], async (err, results) => {
+    // Check if user exists in the database using either email or username
+    const query = 'SELECT * FROM users WHERE email = ? OR username = ?';
+    db.query(query, [emailOrUsername, emailOrUsername], async (err, results) => {
         if (err) {
             console.error('Database error:', err);
             return res.status(500).json({ message: 'Server error.' });
@@ -47,12 +47,14 @@ exports.login = async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
+                username: user.username,  // Include username in the response
                 role_id: user.role_id
                 // Add any other user properties you'd like to include
             }
         });
     });
 };
+
 
 
 // Controller function to handle user registration
