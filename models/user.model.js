@@ -3,12 +3,14 @@ const sql = require("./db.js");
 // User constructor
 const User = function(user) {
     this.name = user.name;
+    this.username = user.username;  // Added username field
     this.email = user.email;
-    this.password = user.password; // Não armazene senhas em texto simples em produção
-    this.role = user.role;
+    this.password = user.password; // Do not store passwords in plain text in production
+    this.role_id = user.role_id;  // Updated to role_id
+    this.profile_pic = user.profile_pic;  // Added profile_pic field
 };
 
-// Criar um novo usuário
+// Create a new user
 User.create = (newUser, result) => {
     sql.query("INSERT INTO users SET ?", newUser, (err, res) => {
         if (err) {
@@ -19,7 +21,7 @@ User.create = (newUser, result) => {
     });
 };
 
-// Listar todos os usuários
+// List all users
 User.getAll = (result) => {
     sql.query("SELECT * FROM users", (err, res) => {
         if (err) {
@@ -30,7 +32,7 @@ User.getAll = (result) => {
     });
 };
 
-// Obter um usuário específico pelo ID
+// Get a specific user by ID
 User.getById = (id, result) => {
     sql.query("SELECT * FROM users WHERE id = ?", id, (err, res) => {
         if (err) {
@@ -45,11 +47,11 @@ User.getById = (id, result) => {
     });
 };
 
-// Atualizar todos os dados de um usuário
+// Update all user data
 User.updateById = (id, user, result) => {
     sql.query(
-        "UPDATE users SET name = ?, email = ?, role = ? WHERE id = ?",
-        [user.name, user.email, user.role, id],
+        "UPDATE users SET name = ?, username = ?, email = ?, role_id = ?, profile_pic = ? WHERE id = ?",
+        [user.name, user.username, user.email, user.role_id, user.profile_pic, id],
         (err, res) => {
             if (err) {
                 result(err, null);
@@ -64,7 +66,7 @@ User.updateById = (id, user, result) => {
     );
 };
 
-// Atualizar a senha de um usuário
+// Update a user's password
 User.updatePassword = (id, password, result) => {
     sql.query(
         "UPDATE users SET password = ? WHERE id = ?",
@@ -83,7 +85,7 @@ User.updatePassword = (id, password, result) => {
     );
 };
 
-// Atualizar o email de um usuário
+// Update a user's email
 User.updateEmail = (id, email, result) => {
     sql.query(
         "UPDATE users SET email = ? WHERE id = ?",
@@ -102,7 +104,7 @@ User.updateEmail = (id, email, result) => {
     );
 };
 
-// Remover um usuário
+// Remove a user
 User.remove = (id, result) => {
     sql.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
         if (err) {
